@@ -1,0 +1,1 @@
+Import-AzBlueprintWithArtifact -Name AppServicePlan -InputPath ".\"

@@ -1,0 +1,96 @@
+{   
+    "kind":"template",
+    "properties":{
+        "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+                "projectName": {
+                    "type": "string"
+                },
+                "environmentName": {
+                    "type": "string"
+                },
+                "createApplicationInsightsFlag": {
+                    "type": "string"
+                },
+                "skuName": {
+                    "type": "string"
+                },
+                "skuTier": {
+                    "type": "string"
+                }
+            },
+            "variables": {
+                "projectNameEnvironment": "[concat(parameters('projectName'),'-', parameters('environmentName'))]",
+                "appServicePlanName": "[concat(variables('projectNameEnvironment'),'-service-plan')]",
+                "appServicePlanResourceId": "[resourceId('Microsoft.Web/serverFarms/', variables('appServicePlanName'))]",
+                "applicationInsightsName": "[concat(variables('projectNameEnvironment'),'-application-insights')]",
+                "applicationInsightsResourceId": "[resourceId('Microsoft.Insights/components/', variables('applicationInsightsName'))]"
+            },
+            "resources": [
+                {
+                    "condition":"[equals(parameters('createApplicationInsightsFlag'), 'true')]",
+                    "type": "Microsoft.Insights/components",
+                    "name": "[variables('applicationInsightsName')]",
+                    "apiVersion": "2015-05-01",
+                    "location": "[resourceGroup().location]",
+                    "kind": "web",
+                    "tags": {
+                        "displayName": "Application Insights",
+                        "Environment": "[parameters('environmentName')]",
+                        "[concat('hidden-link:', variables('appServicePlanResourceId'))]": "Resource"
+                    },
+                    "dependsOn": [
+                      "[variables('appServicePlanResourceId')]"
+                    ],
+                    "properties": {
+                      "applicationId": "[variables('applicationInsightsName')]",
+                      "Application_Type": "web"
+                    }
+                },
+                {
+                    "type": "Microsoft.Web/serverfarms",
+                    "apiVersion": "2018-02-01",
+                    "name": "[variables('appServicePlanName')]",
+                    "location": "[resourceGroup.location()]",
+                    "tags": {
+                        "displayName": "App Service Plan",
+                        "Environment": "[parameters('environmentName')]"
+                    },
+                    "sku": {
+                        "name": "[parameters('skuName')]",
+                        "tier": "[parameters('skuTier')]"
+                    },
+                    "kind": "app",
+                    "properties": {
+                        "name": "[variables('appServicePlanName')]",
+                        "workerSize": "0",
+                        "workerSizeId": "0",
+                        "numberOfWorkers": "1",
+                        "reserved": false
+                    }
+                }
+            ]
+        },
+        "resourceGroup": "AppServicePlanRG",
+        "parameters":{
+            "projectName": {
+                "value": "[parameters('projectName')]"
+            },
+            "environmentName": {
+                "value": "[parameters('environmentName')]"
+            },
+            "createApplicationInsightsFlag": {
+                "value": "[parameters('createApplicationInsightsFlag')]"
+            },
+            "skuName": {
+                "value": "[parameters('skuName')]"
+            },
+            "skuTier": {
+                "value": "[parameters('skuTier')]"
+            }
+        }
+    },
+    "type": "Microsoft.Blueprint/blueprints/artifacts"
+}

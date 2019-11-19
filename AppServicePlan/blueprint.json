@@ -1,0 +1,57 @@
+{
+    "properties": {
+        "description": "App Service Plam Test Blueprint",
+        "targetScope": "subscription",
+        "parameters": {
+            "projectName": {
+                "type": "string"
+            },
+            "environmentName": {
+                "type": "string",
+                "allowedValues": [
+                    "dev",
+                    "qa",
+                    "prod"
+                ],
+                "defaultValue": "dev"
+            },
+            "createApplicationInsightsFlag": {
+                "type": "string",
+                "defaultValue": "true",
+                "allowedValues": [
+                  "true",
+                  "false"
+                ],
+                "metadata": {
+                  "description": "A boolean to indicate whether the an instance of application insights is created with this service plan"
+                }
+            },
+            "skuName": {
+                "defaultValue": "S1",
+                "type": "string",
+                "metadata": {
+                    "description": "The instance size of the app."
+                }
+            },
+            "skuTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Premium",
+                    "Isolated"
+                ],
+                "metadata": {
+                    "description": "The pricing tier for the App Service plan."
+                }
+            }
+        },
+        "resourceGroups": {
+            "AppServicePlanRG": {
+                "description": "App Service Plan Resource Group",
+                "name":"[concat(parameters('projectName'), '-', parameters('environmentName'))]"
+            }
+        }
+    },
+    "type": "Microsoft.Blueprint/blueprints" 
+}

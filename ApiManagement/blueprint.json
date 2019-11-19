@@ -1,25 +1,59 @@
 {
     "properties": {
-        "description": "This will be displayed in the essentials, so make it good",
+        "description": "Apim Management Test Blueprint",
         "targetScope": "subscription",
         "parameters": { 
-            "principalIds": {
-                "type": "string", 
-                "metadata": {
-                    "displayName": "Principal IDs",
-                    "description": "This is a blueprint parameter that any artifact can reference. We'll display these descriptions for you in the info bubble. Supply principal IDs for the users, groups or service principals for the RBAC assignment",
-                    "strongType": "PrincipalId"
-                }
-            },
-            "genericBlueprintParameter": {
+            "projectName": {
                 "type": "string",
-                "defaultValue": "MyDefaultParamValue"
+                "minLength": 1,
+                "maxLength": 25
+            },
+            "environmentName": {
+                "type": "string",
+                "allowedValues": [
+                    "dev",
+                    "qa",
+                    "prod"
+                ],
+                "defaultValue": "dev"
+            },
+            "publisherEmail": {
+                "type": "string",
+                "minLength": 1,
+                "metadata": {
+                    "description": "The email address of the owner of the service"
+                },
+                "defaultValue":"paul@phobos-software.net"
+            },
+            "publisherName": {
+                "type": "string",
+                "minLength": 1,
+                "metadata": {
+                    "description": "The name of the owner of the service"
+                },
+                "defaultValue":"Paul Sheridan"
+            },
+            "sku": {
+                "type": "string",
+                "allowedValues": [
+                    "Developer",
+                    "Standard",
+                    "Premium"
+                ],
+                "defaultValue": "Developer"
+            },
+            "skuCount": {
+                "type": "int",
+                "defaultValue": 1,
+                "metadata": {
+                    "description": "The instance size of this API Management service."
+                }
             }
         },
         "resourceGroups": {
-            "SingleRG": {
-                "description": "An optional description for your RG artifact. FYI location and name properties can be left out and we will assume they are assignment-time parameters",
-                "location": "uksouth"
+            "ApimRG": {
+                "description": "Apim Resource Group",
+                "name":"[concat(parameters('projectName'), '-', parameters('environmentName'))]"
             }
         }
     },

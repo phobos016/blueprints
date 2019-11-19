@@ -5,55 +5,28 @@
             "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
             "contentVersion": "1.0.0.0",
             "parameters": {
-                "serviceName": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 25
+                "projectName": {
+                    "type": "string"
                 },
                 "environmentName": {
                     "type": "string"
                 },
                 "publisherEmail": {
-                    "type": "string",
-                    "minLength": 1,
-                    "metadata": {
-                        "description": "The email address of the owner of the service"
-                    }
+                    "type": "string"
                 },
                 "publisherName": {
-                    "type": "string",
-                    "minLength": 1,
-                    "metadata": {
-                        "description": "The name of the owner of the service"
-                    }
+                    "type": "string"
                 },
                 "sku": {
-                    "type": "string",
-                    "allowedValues": [
-                        "Developer",
-                        "Standard",
-                        "Premium"
-                    ],
-                    "defaultValue": "Developer"
+                    "type": "string"
                 },
                 "skuCount": {
-                    "type": "int",
-                    "defaultValue": 1,
-                    "metadata": {
-                        "description": "The instance size of this API Management service."
-                    }
-                },
-                "location":{
-                    "type": "string",
-                    "defaultValue": "[resourceGroup().location]",
-                    "metadata": {
-                        "description": "Location for all resources."
-                    }
+                    "type": "int"
                 }
             },
             "variables": {
-                "serviceNameEnvironment": "[concat(parameters('serviceName'),'-',parameters('environmentName'))]",
-                "apiManagementName": "[concat(variables('serviceNameEnvironment'), '-apim')]"
+                "projectNameEnvironment": "[concat(parameters('projectName'),'-',parameters('environmentName'))]",
+                "apiManagementName": "[concat(variables('projectNameEnvironment'), '-apim')]"
             },
             "resources": [
                 {
@@ -70,7 +43,7 @@
                         "name": "[parameters('sku')]",
                         "capacity": "[parameters('skuCount')]"
                     },
-                    "location": "[parameters('location')]",
+                    "location": "[resourceGroup().location]",
                     "properties": {
                         "publisherEmail": "[parameters('publisherEmail')]",
                         "publisherName": "[parameters('publisherName')]",
@@ -78,6 +51,27 @@
                     }
                 }
             ]
+        },
+        "resourceGroup": "ApimRG",
+        "parameters":{
+            "projectName": {
+                "value": "[parameters('projectName')]"
+            },
+            "environmentName": {
+                "value": "[parameters('environmentName')]"
+            },
+            "publisherEmail": {
+                "value": "[parameters('publisherEmail')]"
+            },
+            "publisherName": {
+                "value": "[parameters('publisherName')]"
+            },
+            "sku": {
+                "value": "[parameters('sku')]"
+            },
+            "skuCount": {
+                "value": "[parameters('skuCount')]"
+            }
         }
     },
     "type": "Microsoft.Blueprint/blueprints/artifacts"

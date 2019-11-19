@@ -2,6 +2,7 @@
     "identity": {
         "type": "SystemAssigned"
     },
+    "location": "uksouth",
     "properties": {
         "blueprintId": "",
         "locks": {
