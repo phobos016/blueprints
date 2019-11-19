@@ -55,7 +55,7 @@
                     "name": "[variables('appServicePlanName')]",
                     "location": "[resourceGroup().location]",
                     "tags": {
-                        "displayName": "App Service Plan",
+                        "Project": "[parameters('projectName')]",
                         "Environment": "[parameters('environmentName')]"
                     },
                     "sku": {

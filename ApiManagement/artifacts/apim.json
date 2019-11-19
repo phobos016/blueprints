@@ -34,10 +34,8 @@
                     "name": "[variables('apiManagementName')]",
                     "type": "Microsoft.ApiManagement/service",
                     "tags": {
-                        "Created By": "PB Devops",
-                        "Resource": "global",
-                        "Function Group": "APIM",
-                        "displayName": "APIM"
+                        "Project": "[parameters('projectName')]",
+                        "Environment": "[parameters('environmentName')]"
                     },
                     "sku": {
                         "name": "[parameters('sku')]",
