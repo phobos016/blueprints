@@ -53,7 +53,7 @@
                     "type": "Microsoft.Web/serverfarms",
                     "apiVersion": "2018-02-01",
                     "name": "[variables('appServicePlanName')]",
-                    "location": "[resourceGroup.location()]",
+                    "location": "[resourceGroup().location]",
                     "tags": {
                         "displayName": "App Service Plan",
                         "Environment": "[parameters('environmentName')]"
