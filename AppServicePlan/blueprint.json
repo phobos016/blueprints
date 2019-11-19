@@ -1,6 +1,6 @@
 {
     "properties": {
-        "description": "App Service Plam Test Blueprint",
+        "description": "App Service Plan Test Blueprint",
         "targetScope": "subscription",
         "parameters": {
             "projectName": {
