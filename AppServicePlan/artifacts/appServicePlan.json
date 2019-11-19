@@ -56,7 +56,8 @@
                     "location": "[resourceGroup().location]",
                     "tags": {
                         "Project": "[parameters('projectName')]",
-                        "Environment": "[parameters('environmentName')]"
+                        "Environment": "[parameters('environmentName')]",
+                        "Dave" : "DAVE"
                     },
                     "sku": {
                         "name": "[parameters('skuName')]",
