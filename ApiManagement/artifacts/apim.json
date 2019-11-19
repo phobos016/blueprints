@@ -1,0 +1,84 @@
+{   
+    "kind":"template",
+    "properties":{
+        "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+                "serviceName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 25
+                },
+                "environmentName": {
+                    "type": "string"
+                },
+                "publisherEmail": {
+                    "type": "string",
+                    "minLength": 1,
+                    "metadata": {
+                        "description": "The email address of the owner of the service"
+                    }
+                },
+                "publisherName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "metadata": {
+                        "description": "The name of the owner of the service"
+                    }
+                },
+                "sku": {
+                    "type": "string",
+                    "allowedValues": [
+                        "Developer",
+                        "Standard",
+                        "Premium"
+                    ],
+                    "defaultValue": "Developer"
+                },
+                "skuCount": {
+                    "type": "int",
+                    "defaultValue": 1,
+                    "metadata": {
+                        "description": "The instance size of this API Management service."
+                    }
+                },
+                "location":{
+                    "type": "string",
+                    "defaultValue": "[resourceGroup().location]",
+                    "metadata": {
+                        "description": "Location for all resources."
+                    }
+                }
+            },
+            "variables": {
+                "serviceNameEnvironment": "[concat(parameters('serviceName'),'-',parameters('environmentName'))]",
+                "apiManagementName": "[concat(variables('serviceNameEnvironment'), '-apim')]"
+            },
+            "resources": [
+                {
+                    "apiVersion": "2019-01-01",
+                    "name": "[variables('apiManagementName')]",
+                    "type": "Microsoft.ApiManagement/service",
+                    "tags": {
+                        "Created By": "PB Devops",
+                        "Resource": "global",
+                        "Function Group": "APIM",
+                        "displayName": "APIM"
+                    },
+                    "sku": {
+                        "name": "[parameters('sku')]",
+                        "capacity": "[parameters('skuCount')]"
+                    },
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "publisherEmail": "[parameters('publisherEmail')]",
+                        "publisherName": "[parameters('publisherName')]",
+                        "notificationSenderEmail": "noreply@mail.windowsazure.com"
+                    }
+                }
+            ]
+        }
+    },
+    "type": "Microsoft.Blueprint/blueprints/artifacts"
+}
