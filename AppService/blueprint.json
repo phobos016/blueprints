@@ -1,0 +1,82 @@
+{
+    "properties": {
+        "description": "App Service Test Blueprint",
+        "targetScope": "subscription",
+        "parameters": {
+            "projectName": {
+                "type": "string"
+            },
+            "environmentName": {
+                "type": "string",
+                "allowedValues": [
+                    "dev",
+                    "qa",
+                    "prod"
+                ],
+                "defaultValue": "dev"
+            },
+            "slotName": {
+                "type": "string",
+                "allowedValues": [
+                    "staging"
+                ],
+                "defaultValue": "staging"
+            },
+            "alertRequestsRuleCriteriaThreshold": {
+                "type": "string",
+                "defaultValue": "60",
+                "metadata": {
+                  "description": "An integer to indicate the number of requests required to trigger the alert."
+                }
+            },
+            "alertAppConnectionsRuleCriteriaThreshold": {
+                "type": "string",
+                "defaultValue": "100",
+                "metadata": {
+                    "description": "An integer to indicate the number of connections required to trigger the alert."
+                }
+            },
+            "alertAverageResponseTimeRuleCriteriaThreshold": {
+                "type": "string",
+                "defaultValue": "1",
+                "metadata": {
+                    "description": "An integer to indicate the average response time in seconds that is required to trigger the alert."
+                }
+            },
+            "alertMemoryWorkingSetRuleCriteriaThreshold": {
+                "type": "string",
+                "defaultValue": "536870912",
+                "metadata": {
+                    "description": "An integer to indicate the number of bytes required to trigger the alert."
+                }
+            },
+            "alertHttpServerErrorsRuleCriteriaThreshold": {
+                "type": "string",
+                "defaultValue": "0",
+                "metadata": {
+                    "description": "An integer to indicate the number of http server errors required to trigger the alert."
+                }
+            },
+            "actionGroupReceiverEmailAddress": {
+                "type": "string",
+                "defaultValue": "azuremonitor@purplebricks.pagerduty.com",
+                "metadata": {
+                    "description": "An email address that receives alert emails."
+                }
+            },
+            "additionalCommonAppSettings":{
+                "type": "object",
+                "metadata": {
+                    "description": "hashtable of extended application settings to combine into the app service"
+                }
+            }
+        },
+        "resourceGroups": {
+            "AppServiceRG": {
+                "description": "App Service Resource Group",
+                "name":"[concat(parameters('projectName'), '-', parameters('environmentName'))]"
+            }
+        }
+    },
+    "type": "Microsoft.Blueprint/blueprints" 
+}

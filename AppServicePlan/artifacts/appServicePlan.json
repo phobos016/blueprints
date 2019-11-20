@@ -39,7 +39,8 @@
                     "tags": {
                         "displayName": "Application Insights",
                         "Environment": "[parameters('environmentName')]",
-                        "[concat('hidden-link:', variables('appServicePlanResourceId'))]": "Resource"
+                        "[concat('hidden-link:', variables('appServicePlanResourceId'))]": "Resource",
+                        "TestTag":"wewwewe"
                     },
                     "dependsOn": [
                       "[variables('appServicePlanResourceId')]"

@@ -35,7 +35,8 @@
                     "type": "Microsoft.ApiManagement/service",
                     "tags": {
                         "Project": "[parameters('projectName')]",
-                        "Environment": "[parameters('environmentName')]"
+                        "Environment": "[parameters('environmentName')]",
+                        "TestTag": "woohhoooo!!"
                     },
                     "sku": {
                         "name": "[parameters('sku')]",

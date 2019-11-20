@@ -1,0 +1,366 @@
+{   
+    "kind":"template",
+    "properties":{
+      "template": {
+        "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+        "contentVersion": "1.0.0.0",
+        "parameters": {
+          "projectName": {
+              "type": "string"
+          },
+          "environmentName": {
+            "type": "string"
+          },
+          "slotName": {
+            "type": "string"
+          },
+          "alertsEnabled": {
+            "type": "string",
+            "defaultValue": "true",
+            "allowedValues": [
+              "true",
+              "false"
+            ],
+            "metadata": {
+              "description": "A boolean to indicate whether to enable alerts."
+            }
+          },
+          "alertRequestsRuleCriteriaThreshold": {
+            "type": "string",
+            "defaultValue": "60",
+            "metadata": {
+              "description": "An integer to indicate the number of requests required to trigger the alert."
+            }
+          },
+          "alertAppConnectionsRuleCriteriaThreshold": {
+            "type": "string",
+            "defaultValue": "100",
+            "metadata": {
+              "description": "An integer to indicate the number of connections required to trigger the alert."
+            }
+          },
+          "alertAverageResponseTimeRuleCriteriaThreshold": {
+              "type": "string",
+              "defaultValue": "1",
+              "metadata": {
+                "description": "An integer to indicate the average response time in seconds that is required to trigger the alert."
+              }
+          },
+          "alertMemoryWorkingSetRuleCriteriaThreshold": {
+              "type": "string",
+              "defaultValue": "536870912",
+              "metadata": {
+                "description": "An integer to indicate the number of bytes required to trigger the alert."
+              }
+          },
+          "alertHttpServerErrorsRuleCriteriaThreshold": {
+              "type": "string",
+              "defaultValue": "0",
+              "metadata": {
+                "description": "An integer to indicate the number of http server errors required to trigger the alert."
+              }
+          },
+          "actionGroupReceiverEmailAddress": {
+              "type": "string",
+              "defaultValue": "azuremonitor@pushdr.pagerduty.com",
+              "metadata": {
+                "description": "An email address that receives alert emails."
+              }
+          },
+          "additionalCommonAppSettings":{
+              "type": "object"
+          }
+      },
+      "variables": {
+        "projectNameEnvironment": "[concat(parameters('projectName'),'-', parameters('environmentName'))]",
+        "appServicePlanName": "[concat(parameters('projectName'), '-', parameters('environmentName'), '-service-plan')]",
+        "appServicePlanResourceId": "[resourceId(variables('projectNameEnvironment'), 'Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+
+        "apiName": "[concat(parameters('projectName'), '-api')]",
+        "apiResourceId": "[resourceId('Microsoft.Web/sites/', variables('apiName'))]",
+
+        "apiSlotName": "[concat(variables('apiName'),'/', parameters('slotName'))]",
+        "apiSlotPropertyName": "[concat(variables('apiName'),'(staging)')]",
+        "apiSlotResourceId": "[resourceId('Microsoft.Web/sites/slots/', variables('apiName'), 'Staging')]",
+        
+        "actionGroupName": "[concat(parameters('projectName'),'-action-group')]",
+        "actionGroupShortName": "[concat(parameters('environmentName'),'-ag')]",
+        "actionGroupResourceId": "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]",
+
+        "alertRules": [
+        {
+            "name": "[concat('Requests - ', variables('apiName'))]",
+            "description": "[concat('Raises an alert whenever the average number of requests is greater than ', parameters('alertRequestsRuleCriteriaThreshold') ,' per minute over a 5 minute period')]",
+            "evaluationFrequency": "PT1M",
+            "windowSize": "PT5M",
+            "severity": 3,
+            "scopeResourceId": "[variables('apiResourceId')]",
+            "tagDisplayName": "Requests",
+            "criteriaName": "Requests",
+            "criteriaMetricName": "Requests",
+            "criteriaOperator": "GreaterThan",
+            "criteriaTimeAggregation": "Average",
+            "criteriaMetricNamespace": "Microsoft.Web/sites",
+            "criteriaThreshold": "[parameters('alertRequestsRuleCriteriaThreshold')]"
+        },
+        {
+            "name": "[concat('Connections - ', variables('apiName'))]",
+            "description": "[concat('Raises an alert whenever the total number of connections is greater than ', parameters('alertAppConnectionsRuleCriteriaThreshold') ,' per minute period')]",
+            "evaluationFrequency": "PT1M",
+            "windowSize": "PT1M",
+            "severity": 3,
+            "scopeResourceId": "[variables('apiResourceId')]",
+            "tagDisplayName": "AppConnections",
+            "criteriaName": "AppConnections",
+            "criteriaMetricName": "AppConnections",
+            "criteriaOperator": "GreaterThan",
+            "criteriaTimeAggregation": "Total",
+            "criteriaMetricNamespace": "Microsoft.Web/sites",
+            "criteriaThreshold": "[parameters('alertAppConnectionsRuleCriteriaThreshold')]"
+        },
+        {
+            "name": "[concat('Average Response Time - ', variables('apiName'))]",
+            "description": "[concat('Raises an alert whenever the average response time is greater than ', parameters('alertAverageResponseTimeRuleCriteriaThreshold') ,' seconds per minute over a 5 minute period')]",
+            "evaluationFrequency": "PT1M",
+            "windowSize": "PT5M",
+            "severity": 3,
+            "scopeResourceId": "[variables('apiResourceId')]",
+            "tagDisplayName": "AverageResponseTime",
+            "criteriaName": "AverageResponseTime",
+            "criteriaMetricName": "AverageResponseTime",
+            "criteriaOperator": "GreaterThan",
+            "criteriaTimeAggregation": "Average",
+            "criteriaMetricNamespace": "Microsoft.Web/sites",
+            "criteriaThreshold": "[parameters('alertAverageResponseTimeRuleCriteriaThreshold')]"
+        },
+        {
+            "name": "[concat('Memory Working Set - ', variables('apiName'))]",
+            "description": "[concat('Raises an alert whenever the average memory working set is greater than ', parameters('alertMemoryWorkingSetRuleCriteriaThreshold') ,' bytes per minute over a 5 minute period')]",
+            "evaluationFrequency": "PT1M",
+            "windowSize": "PT5M",
+            "severity": 3,
+            "scopeResourceId": "[variables('apiResourceId')]",
+            "tagDisplayName": "MemoryWorkingSet",
+            "criteriaName": "MemoryWorkingSet",
+            "criteriaMetricName": "MemoryWorkingSet",
+            "criteriaOperator": "GreaterThan",
+            "criteriaTimeAggregation": "Average",
+            "criteriaMetricNamespace": "Microsoft.Web/sites",
+            "criteriaThreshold": "[parameters('alertMemoryWorkingSetRuleCriteriaThreshold')]"
+        },
+        {
+            "name": "[concat('Http Server Errors - ', variables('apiName'))]",
+            "description": "[concat('Raises an alert whenever the total number of requests is greater than ', parameters('alertHttpServerErrorsRuleCriteriaThreshold') ,' over a 5 minute period')]",
+            "evaluationFrequency": "PT5M",
+            "windowSize": "PT5M",
+            "severity": 4,
+            "scopeResourceId": "[variables('apiResourceId')]",
+            "tagDisplayName": "Http5xx",
+            "criteriaName": "Http5xx",
+            "criteriaMetricName": "Http5xx",
+            "criteriaOperator": "GreaterThan",
+            "criteriaTimeAggregation": "Total",
+            "criteriaMetricNamespace": "Microsoft.Web/sites",
+            "criteriaThreshold": "[parameters('alertHttpServerErrorsRuleCriteriaThreshold')]"
+        }
+        ],
+    
+        "baseAppSettings":{
+            "ASPNETCORE_ENVIRONMENT": "[parameters('environmentName')]",
+            "WEBSITE_DYNAMIC_CACHE": "0"
+        },
+        "combinedAppSettings": "[union(variables('baseAppSettings'), parameters('additionalCommonAppSettings'))]"
+      },
+      "resources": [
+        {
+          "type": "Microsoft.Web/sites",
+          "name": "[variables('apiName')]",
+          "apiVersion": "2016-08-01",
+          "location": "[resourceGroup().location]",
+          "kind": "app",
+          "properties": {
+            "Name": "[variables('apiName')]",
+            "serverFarmId": "[variables('appServicePlanResourceId')]",
+            "httpsOnly": true,
+            "reserved": false,
+            "clientAffinityEnabled": true,
+            "hostNamesDisabled": false,
+            "siteConfig": {
+              "minTlsVersion": "1.2",
+              "use32BitWorkerProcess": false,
+              "alwaysOn": true
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Web/sites/slots",
+              "name": "[variables('apiSlotName')]",
+              "apiVersion": "2016-08-01",
+              "location": "[resourceGroup().location]",
+              "kind": "app",
+              "tags": {
+                "displayName": "Staging Slot"
+              },
+              "dependsOn": [
+                "[variables('apiResourceId')]"
+              ],
+              "properties": {
+                "name": "[variables('apiSlotPropertyName')]",
+                "httpsOnly": true,
+                "serverFarmId": "[variables('appServicePlanResourceId')]",
+                "clientCertEnabled": false,
+                "clientAffinityEnabled": false,
+                "siteConfig": {
+                  "minTlsVersion": "1.2",
+                  "use32BitWorkerProcess": false,
+                  "alwaysOn": true
+                }
+              },
+              "resources": [
+                {
+                  "apiVersion": "2015-08-01",
+                  "name": "appsettings",
+                  "type": "config",
+                  "tags": {
+                    "displayName": "App Settings"
+                  },
+                  "dependsOn": [
+                    "[variables('apiSlotResourceId')]",
+                    "Microsoft.ApplicationInsights.AzureWebSites"
+                  ],
+                  "properties": "[variables('combinedAppSettings')]"
+                },
+                {
+                  "apiVersion": "2018-02-01",
+                  "name": "Microsoft.ApplicationInsights.AzureWebSites",
+                  "type": "siteextensions",
+                  "tags": {
+                    "displayName": "Site Extensions"
+                  },
+                  "dependsOn": [
+                    "[variables('apiSlotResourceId')]"
+                  ],
+                  "properties": {
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Microsoft.Insights/actionGroups",
+          "name": "[variables('actionGroupName')]",
+          "apiVersion": "2019-06-01",
+          "location": "Global",
+          "tags": {
+            "displayName": "Action Group"
+          },
+          "scale": null,
+          "properties": {
+            "groupShortName": "[variables('actionGroupShortName')]",
+            "enabled": "[parameters('alertsEnabled')]",
+            "emailReceivers": [
+              {
+                "name": "Email",
+                "emailAddress": "[parameters('actionGroupReceiverEmailAddress')]",
+                "useCommonAlertSchema": true
+              }
+            ],
+            "smsReceivers": [],
+            "webhookReceivers": [],
+            "itsmReceivers": [],
+            "logicAppReceivers": [],
+            "azureFunctionReceivers": []
+          },
+          "dependsOn": []
+        },
+        {
+            "tags": {
+              "displayName": "Metric Alerts"
+            },
+            "type": "Microsoft.Insights/metricAlerts",
+            "name": "[variables('alertRules')[copyIndex()].name]",
+            "apiVersion": "2018-03-01",
+            "location": "global",
+            "copy": {
+              "name": "rulescopy",
+              "count": "[length(variables('alertRules'))]"
+            },
+            "scale": null,
+            "properties": {
+              "description": "[variables('alertRules')[copyIndex()].description]",
+              "severity": "[variables('alertRules')[copyIndex()].severity]",
+              "enabled": "[parameters('alertsEnabled')]",
+              "scopes": [
+                "[variables('alertRules')[copyIndex()].scopeResourceId]"
+              ],
+              "evaluationFrequency": "[variables('alertRules')[copyIndex()].evaluationFrequency]",
+              "windowSize": "[variables('alertRules')[copyIndex()].windowSize]",
+              "templateType": 8,
+              "criteria": {
+                "allOf": [
+                  {
+                    "threshold": "[variables('alertRules')[copyIndex()].criteriaThreshold]",
+                    "name": "[variables('alertRules')[copyIndex()].criteriaName]",
+                    "metricNamespace": "[variables('alertRules')[copyIndex()].criteriaMetricNamespace]",
+                    "metricName": "[variables('alertRules')[copyIndex()].criteriaMetricName]",
+                    "dimensions": [],
+                    "operator": "[variables('alertRules')[copyIndex()].criteriaOperator]",
+                    "timeAggregation": "[variables('alertRules')[copyIndex()].criteriaTimeAggregation]",
+                    "monitorTemplateType": 8
+                  }
+                ],
+                "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria"
+              },
+              "autoMitigate": true,
+              "targetResourceType": "[variables('alertRules')[copyIndex()].criteriaMetricNamespace]",
+              "actions": [
+                {
+                  "actionGroupId": "[variables('actionGroupResourceId')]",
+                  "webHookProperties": {}
+                }
+              ]
+            },
+            "dependsOn": [
+              "[variables('actionGroupResourceId')]",
+              "[variables('alertRules')[copyIndex()].scopeResourceId]"
+            ]
+        }
+      ]
+    },
+    "resourceGroup": "AppServiceRG",
+    "parameters":{
+      "projectName": {
+        "value": "[parameters('projectName')]"
+      },
+      "environmentName": {
+        "value": "[parameters('environmentName')]"
+      },
+      "slotName": {
+        "value": "[parameters('slotName')]"
+      },
+      "alertRequestsRuleCriteriaThreshold": {
+        "value": "[parameters('alertRequestsRuleCriteriaThreshold')]"
+      },
+      "alertAppConnectionsRuleCriteriaThreshold": {
+        "value": "[parameters('alertAppConnectionsRuleCriteriaThreshold')]"
+      },
+      "alertAverageResponseTimeRuleCriteriaThreshold": {
+        "value": "[parameters('alertAverageResponseTimeRuleCriteriaThreshold')]"
+      },
+      "alertMemoryWorkingSetRuleCriteriaThreshold": {
+        "value": "[parameters('alertMemoryWorkingSetRuleCriteriaThreshold')]"
+      },
+      "alertHttpServerErrorsRuleCriteriaThreshold": {
+        "value": "[parameters('alertHttpServerErrorsRuleCriteriaThreshold')]"
+      },
+      "actionGroupReceiverEmailAddress": {
+        "value": "[parameters('actionGroupReceiverEmailAddress')]"
+      },
+      "additionalCommonAppSettings":{
+        "value": "[parameters('additionalCommonAppSettings')]"
+      }
+    }
+  },
+  "type": "Microsoft.Blueprint/blueprints/artifacts"
+}
