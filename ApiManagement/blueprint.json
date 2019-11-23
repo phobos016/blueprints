@@ -52,8 +52,7 @@
         },
         "resourceGroups": {
             "ApimRG": {
-                "description": "Apim Resource Group",
-                "name":"[concat(parameters('projectName'), '-', parameters('environmentName'))]"
+                "description": "Apim Resource Group"
             }
         }
     },

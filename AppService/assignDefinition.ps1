@@ -1,8 +1,10 @@
 param(
     [Parameter(Mandatory = $true)]
-    [string] $serviceName,
+    [string] $projectName,
     [Parameter(Mandatory = $true)]
     [string] $environment,
+    [Parameter(Mandatory = $true)]
+    [string] $serviceTypeName,
     [Parameter(Mandatory = $true)]
     [string] $bpVersion
 )
@@ -10,15 +12,19 @@ param(
 $parent = (Get-Item $PSScriptRoot).Parent
 Import-Module $parent\BPShared.psm1 -force
 
+$blueprintDefinitionName = "PBCoreAppService"
+
 $rgParameters = @{
     AppServiceRG=@{
         Location="uksouth"
+        Name="$($serviceTypeName)-$($projectName)-$($environment)"
     }
 }
 
 $bpParameters = @{
-    projectName = $serviceName
+    projectName = $projectName
     environmentName = $environment
+    serviceTypeName = $serviceTypeName
     slotName='staging'
     alertRequestsRuleCriteriaThreshold='60'
     alertAppConnectionsRuleCriteriaThreshold='100'
@@ -30,8 +36,8 @@ $bpParameters = @{
 }
 
 upsertAssignation `
-    -assignedName "$($serviceName)-$($environment)-app-assignation" `
-    -bpName 'AppService' `
+    -assignedName "$($blueprintDefinitionName)-$($projectName)-$($environment)-app" `
+    -bpName $blueprintDefinitionName `
     -bpVersion $bpVersion `
     -rgParameters $rgParameters `
     -bpParameters $bpParameters `

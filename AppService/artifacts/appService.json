@@ -11,6 +11,12 @@
           "environmentName": {
             "type": "string"
           },
+          "serviceTypeName":{
+            "type": "string",
+            "metadata": {
+              "description": "The service plan type to build into"
+            }
+          },
           "slotName": {
             "type": "string"
           },
@@ -72,18 +78,19 @@
           }
       },
       "variables": {
-        "projectNameEnvironment": "[concat(parameters('projectName'),'-', parameters('environmentName'))]",
-        "appServicePlanName": "[concat(parameters('projectName'), '-', parameters('environmentName'), '-service-plan')]",
-        "appServicePlanResourceId": "[resourceId(variables('projectNameEnvironment'), 'Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "projectNameEnvironment": "[concat(parameters('serviceTypeName'), '-', parameters('projectName'),'-', parameters('environmentName'))]",
+        "servicePlanName": "[concat(parameters('serviceTypeName'), '-', parameters('environmentName'), '-service-plan')]",
+        "servicePlanResourceGroupName": "[concat(parameters('serviceTypeName'),'-service-plans')]",
+        "servicePlanResourceId": "[resourceId(variables('servicePlanResourceGroupName'), 'Microsoft.Web/serverfarms', variables('servicePlanName'))]",
 
-        "apiName": "[concat(parameters('projectName'), '-api')]",
+        "apiName": "[concat(variables('projectNameEnvironment'), '-api')]",
         "apiResourceId": "[resourceId('Microsoft.Web/sites/', variables('apiName'))]",
 
         "apiSlotName": "[concat(variables('apiName'),'/', parameters('slotName'))]",
         "apiSlotPropertyName": "[concat(variables('apiName'),'(staging)')]",
         "apiSlotResourceId": "[resourceId('Microsoft.Web/sites/slots/', variables('apiName'), 'Staging')]",
         
-        "actionGroupName": "[concat(parameters('projectName'),'-action-group')]",
+        "actionGroupName": "[concat(variables('projectNameEnvironment'),'-action-group')]",
         "actionGroupShortName": "[concat(parameters('environmentName'),'-ag')]",
         "actionGroupResourceId": "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]",
 
@@ -180,7 +187,7 @@
           "kind": "app",
           "properties": {
             "Name": "[variables('apiName')]",
-            "serverFarmId": "[variables('appServicePlanResourceId')]",
+            "serverFarmId": "[variables('servicePlanResourceId')]",
             "httpsOnly": true,
             "reserved": false,
             "clientAffinityEnabled": true,
@@ -207,7 +214,7 @@
               "properties": {
                 "name": "[variables('apiSlotPropertyName')]",
                 "httpsOnly": true,
-                "serverFarmId": "[variables('appServicePlanResourceId')]",
+                "serverFarmId": "[variables('servicePlanResourceId')]",
                 "clientCertEnabled": false,
                 "clientAffinityEnabled": false,
                 "siteConfig": {
@@ -335,6 +342,9 @@
       },
       "environmentName": {
         "value": "[parameters('environmentName')]"
+      },
+      "serviceTypeName": {
+        "value": "[parameters('serviceTypeName')]"
       },
       "slotName": {
         "value": "[parameters('slotName')]"

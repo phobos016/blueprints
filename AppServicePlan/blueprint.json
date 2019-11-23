@@ -3,7 +3,7 @@
         "description": "App Service Plan Test Blueprint",
         "targetScope": "subscription",
         "parameters": {
-            "projectName": {
+            "serviceTypeName": {
                 "type": "string"
             },
             "environmentName": {
@@ -64,7 +64,7 @@
         "resourceGroups": {
             "AppServicePlanRG": {
                 "description": "App Service Plan Resource Group",
-                "name":"[concat(parameters('projectName'), '-', parameters('environmentName'))]"
+                "name":"[concat(parameters('serviceTypeName'), '-service-plans')]"
             }
         }
     },

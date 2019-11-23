@@ -7,6 +7,8 @@ param(
     [string] $bpVersion
 )
 
+$blueprintDefinitionName = "PBCoreServicePlan"
+
 $parent = (Get-Item $PSScriptRoot).Parent
 Import-Module $parent\BPShared.psm1 -force
 
@@ -17,7 +19,7 @@ $rgParameters = @{
 }
 
 $bpParameters = @{
-    projectName = $serviceName
+    serviceTypeName = $serviceName
     environmentName = $environment
     createApplicationInsightsFlag='true'
     skuName='S1'
@@ -25,8 +27,8 @@ $bpParameters = @{
 }
 
 upsertAssignation `
-    -assignedName "$($serviceName)-$($environment)-plan-assignation" `
-    -bpName 'AppServicePlan' `
+    -assignedName "$($blueprintDefinitionName)-$($serviceName)-$($environment)-plan" `
+    -bpName $blueprintDefinitionName `
     -bpVersion $bpVersion `
     -rgParameters $rgParameters `
     -bpParameters $bpParameters `
