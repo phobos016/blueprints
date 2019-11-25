@@ -1,4 +1,4 @@
-name: PBCoreApiManagement Blueprint Release
+name: CoreApiManagement Blueprint Release
 
 trigger:
   branches:
@@ -6,7 +6,7 @@ trigger:
     - master
   paths:
     include:
-    - yaml/release/PBCoreApiManagement/*
+    - yaml/release/CoreApiManagement/*
 
 variables:
   Patch: $[counter(format('{0}.{1}', variables['Major'], variables['Minor']), 0)]
