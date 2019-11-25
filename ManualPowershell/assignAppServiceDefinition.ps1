@@ -9,10 +9,10 @@ param(
     [string] $bpVersion
 )
 
-$parent = (Get-Item $PSScriptRoot).Parent
-Import-Module $parent\BPShared.psm1 -force
 
-$blueprintDefinitionName = "PBCoreAppService"
+Import-Module $PSScriptRoot\BPShared.psm1 -force
+
+$blueprintDefinitionName = "CoreAppService"
 
 $rgParameters = @{
     AppServiceRG=@{
@@ -31,7 +31,7 @@ $bpParameters = @{
     alertAverageResponseTimeRuleCriteriaThreshold='1'
     alertMemoryWorkingSetRuleCriteriaThreshold='536870912'
     alertHttpServerErrorsRuleCriteriaThreshold='0'
-    actionGroupReceiverEmailAddress='azuremonitor@purplebricks.pagerduty.com'
+    actionGroupReceiverEmailAddress='azuremonitor@pagerduty.com'
     additionalCommonAppSettings=@{}
 }
 

@@ -7,14 +7,14 @@ param(
     [string] $bpVersion
 )
 
-$blueprintDefinitionName = "PBCoreServicePlan"
+$blueprintDefinitionName = "CoreApiManagement"
 
-$parent = (Get-Item $PSScriptRoot).Parent
-Import-Module $parent\BPShared.psm1 -force
+Import-Module $PSScriptRoot\BPShared.psm1 -force
 
 $rgParameters = @{
-    AppServicePlanRG=@{
+    ApimRG=@{
         Location="uksouth"
+        name="$($serviceName)-$($environment)"
     }
 }
 
@@ -27,7 +27,7 @@ $bpParameters = @{
 }
 
 upsertAssignation `
-    -assignedName "$($blueprintDefinitionName)-$($serviceName)-$($environment)-plan" `
+    -assignedName "$($serviceName)-$($environment)-apim" `
     -bpName $blueprintDefinitionName `
     -bpVersion $bpVersion `
     -rgParameters $rgParameters `
