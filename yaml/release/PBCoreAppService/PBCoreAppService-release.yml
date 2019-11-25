@@ -1,0 +1,44 @@
+name: PBCoreService Blueprint Release
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - yaml/release/PBCoreAppService/*
+
+variables:
+  Patch: $[counter(format('{0}.{1}', variables['Major'], variables['Minor']), 0)]
+
+stages:
+- stage: Dev
+  jobs:
+  - deployment: AssignAndReleaseToDev
+    displayName: Assign & Release to Dev
+    pool:
+      vmImage: 'windows-2019'
+    environment: Dev
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - template: app-release-template.yml
+            parameters: 
+              ServiceConnection: $(ServiceConnection)
+              BlueprintName: $(BlueprintName)
+              ProjectName: $(ProjectName)
+              SlotName: $(SlotName)
+              AlertsEnabled: true
+              ClientAffinityEnabled: true
+              EnableHttpsOnly: false
+              LockResource: false
+              Use32BitProcess: true
+              ServiceTypeName: $(ServiceTypeName)
+              Environment: 'dev'
+              SubscriptionId: $(SubscriptionId)
+              DeploymentLocation: $(DeploymentLocation)
+
+
+

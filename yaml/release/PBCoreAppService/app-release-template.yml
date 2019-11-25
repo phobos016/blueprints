@@ -1,0 +1,54 @@
+parameters:
+  ServiceConnection: ''
+  BlueprintName: ''
+  ProjectName: ''
+  SlotName: ''
+  AlertsEnabled: ''
+  ClientAffinityEnabled: true
+  EnableHttpsOnly: false
+  LockResource: false
+  Use32BitProcess: ''
+  ServiceTypeName: ''
+  Environment: ''
+  SubscriptionId: ''
+  DeploymentLocation: ''
+
+steps:
+- task: MagicChunks@2
+  inputs:
+    sourcePath: 'assign.json'
+    sourcePathRecurse: true
+    fileType: 'Json'
+    targetPathType: 'source'
+    transformationType: 'json'
+    transformations: |
+      {
+        "location": "${{ parameters.DeploymentLocation }}",
+        "properties/resourceGroups/AppServiceRG/location": "${{ parameters.DeploymentLocation }}",
+        "properties/resourceGroups/AppServiceRG/name": "${{ parameters.ServiceTypeName }}-${{ parameters.ProjectName }}-${{ parameters.Environment }}",
+        "properties/parameters/projectName/value": "${{ parameters.ProjectName }}",
+        "properties/parameters/environmentName/value": "${{ parameters.Environment }}",
+        "properties/parameters/serviceTypeName/value": "${{ parameters.ServiceTypeName }}",
+        "properties/parameters/slotName/value": "${{ parameters.SlotName }}",
+        "properties/parameters/alertsEnabled/value": "${{ parameters.AlertsEnabled }}",
+        "properties/parameters/clientAffinityEnabled/value": "${{ parameters.ClientAffinityEnabled }}",
+        "properties/parameters/enableHttpsOnly/value": "${{ parameters.EnableHttpsOnly }}",
+        "properties/parameters/lockResource/value": "${{ parameters.LockResource }}",
+        "properties/parameters/use32bitWorkerProcess/value": "${{ parameters.Use32BitProcess }}",
+        "properties/parameters/alertRequestsRuleCriteriaThreshold/value": "60",
+        "properties/parameters/alertAppConnectionsRuleCriteriaThreshold/value": "100",
+        "properties/parameters/alertAverageResponseTimeRuleCriteriaThreshold/value": "1",
+        "properties/parameters/alertMemoryWorkingSetRuleCriteriaThreshold/value": "536870912",
+        "properties/parameters/actionGroupReceiverEmailAddress/value": "azuremonitor@purplebricks.pagerduty.com",
+        "properties/parameters/additionalCommonAppSettings/value/Features:Flags:0:IsActive" : "true",
+        "properties/parameters/additionalCommonAppSettings/value/Features:Flags:1:IsActive" : "true",
+        "properties/parameters/additionalCommonAppSettings/value/Features:Flags:2:IsActive" : "true"
+      }
+- template: ../shared/assign-blueprint.yml
+  parameters: 
+    ServiceConnection: ${{ parameters.ServiceConnection }}
+    BlueprintName: ${{ parameters.BlueprintName }}
+    ServiceName: ${{ parameters.projectName }}
+    ParametersFile: yaml/release/PBCoreAppService/assign.json
+    Environment: ${{ parameters.Environment }}
+    SubscriptionId: ${{ parameters.SubscriptionId }}

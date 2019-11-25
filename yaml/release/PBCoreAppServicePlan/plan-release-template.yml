@@ -1,0 +1,55 @@
+parameters:
+  ServiceConnection: ''
+  BlueprintName: ''
+  ServiceTypeName: ''
+  Environment: ''
+  SubscriptionId: ''
+  DeploymentLocation: ''
+  CreateApplicationInsightsFlag: ''
+  SkuName: ''
+  SkuTier: ''
+  SkuCount: ''
+  LockResource: false
+  ShouldApplyAutoScaleRule: false
+  AutoScaleMinimumNumberOfInstances: ''
+  AutoScaleMaximumNumberOfInstances: ''
+  ScaleUpthreshold: ''
+  ScaleDownThreshold: ''
+  AspWebHookUrl: ''
+
+steps:
+- task: MagicChunks@2
+  inputs:
+    sourcePath: 'assign.json'
+    sourcePathRecurse: true
+    fileType: 'Json'
+    targetPathType: 'source'
+    transformationType: 'json'
+    transformations: |
+      {
+        "location": "${{ parameters.DeploymentLocation }}",
+        "properties/resourceGroups/AppServicePlanRG/name": "${{ parameters.ServiceTypeName }}-service-plans",
+        "properties/resourceGroups/AppServicePlanRG/location": "${{ parameters.DeploymentLocation }}",
+        "properties/parameters/serviceTypeName/value": "${{ parameters.ServiceTypeName }}",
+        "properties/parameters/environmentName/value": "${{ parameters.Environment }}",
+        "properties/parameters/createApplicationInsightsFlag/value": "${{ parameters.CreateApplicationInsightsFlag }}",
+        "properties/parameters/skuName/value": "${{ parameters.SkuName }}",
+        "properties/parameters/skuTier/value": "${{ parameters.SkuTier }}",
+        "properties/parameters/skuCount/value": "${{ parameters.SkuCount }}",
+        "properties/parameters/lockResource/value": '${{ parameters.LockResource }}',
+        "properties/parameters/shouldApplyAutoScaleRule/value": "${{ parameters.ShouldApplyAutoScaleRule }}",
+        "properties/parameters/autoScaleMinimumNumberOfInstances/value": "${{ parameters.AutoScaleMinimumNumberOfInstances }}",
+        "properties/parameters/autoScaleMaximumNumberOfInstances/value": "${{ parameters.AutoScaleMaximumNumberOfInstances }}",
+        "properties/parameters/scaleUpthreshold/value": "${{ parameters.ScaleUpthreshold }}",
+        "properties/parameters/scaleDownThreshold/value": "${{ parameters.ScaleDownThreshold }}",
+        "properties/parameters/aspWebHookUrl/value": "${{ parameters.AspWebHookUrl }}"
+      }
+- template: ../shared/assign-blueprint.yml
+  parameters: 
+    ServiceConnection: ${{ parameters.ServiceConnection }}
+    BlueprintName: ${{ parameters.BlueprintName }}
+    ServiceName: ${{ parameters.ServiceTypeName }}
+    ParametersFile: yaml/release/PBCoreAppServicePlan/assign.json
+    Environment: ${{ parameters.Environment }}
+    SubscriptionId: ${{ parameters.SubscriptionId }}
+  

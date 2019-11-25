@@ -1,0 +1,35 @@
+{
+  "identity": {
+    "type": "SystemAssigned"
+  },
+  "location": "",
+  "properties": {
+    "resourceGroups": {
+      "ApimRG": {
+        "location": "",
+        "name": ""
+      }
+    },
+    "blueprintId": "",
+    "parameters": {
+      "projectName": {
+        "value": ""
+      },
+      "environmentName": {
+        "value": ""
+      },
+      "publisherEmail": {
+        "value": ""
+      },
+      "publisherName": {
+        "value": ""
+      },
+      "sku": {
+        "value": ""
+      },
+      "skuCount": {
+        "value": ""
+      }
+    }
+  }
+}

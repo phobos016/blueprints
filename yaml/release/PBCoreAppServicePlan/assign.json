@@ -1,0 +1,56 @@
+{
+    "identity": {
+        "type": "SystemAssigned"
+    },
+    "location": "",
+    "properties": {
+        "resourceGroups": {
+            "AppServicePlanRG": {
+                "name": "",
+                "location": ""
+            }
+        },
+        "blueprintId": "",
+        "parameters": {
+            "serviceTypeName": {
+                "value": ""
+            },
+            "environmentName": {
+                "value": ""
+            },
+            "createApplicationInsightsFlag": {
+                "value": ""
+            },
+            "skuName": {
+                "value": ""
+            },
+            "skuTier": {
+                "value": ""
+            },
+            "skuCount": {
+                "value": ""
+            },
+            "lockResource": {
+                "value": false
+            },
+            "shouldApplyAutoScaleRule": {
+                "value": ""
+            },
+            "autoScaleMinimumNumberOfInstances": {
+                "value": ""
+            },
+            "autoScaleMaximumNumberOfInstances": {
+                "value": ""
+            },
+            "scaleUpthreshold": {
+                "value": ""
+            },
+            "scaleDownThreshold": {
+                "value": ""
+            },
+            "aspWebHookUrl": {
+                "value": ""
+            }
+        }
+    }
+}

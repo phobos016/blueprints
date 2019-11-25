@@ -1,0 +1,103 @@
+parameters:
+  DeployProjectName: ''
+  PromoteToGlobal: false
+  PromoteToRegression: false
+  PromoteToHotFix: false
+  PromoteToTraining: false
+
+jobs:
+- ${{ if eq(parameters.PromoteToGlobal, 'true') }}:
+  - deployment: PromoteToGlobal
+    displayName: Promote to PromoteToGlobal
+    Pool:
+      vmImage: 'windows-2019'
+    environment: Global
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - template: plan-release-template.yml
+            parameters: 
+              ServiceConnection: $(ServiceConnection)
+              BlueprintName: $(BlueprintName)
+              ProjectName: $(ProjectName)
+              SlotName: $(SlotName)
+              AlertsEnabled: true
+              Use32BitProcess: true
+              ServiceTypeName: $(ServiceTypeName)
+              Environment: 'global'
+              SubscriptionId: $(SubscriptionId)
+              DeploymentLocation: $(DeploymentLocation)
+              
+- ${{ if eq(parameters.promoteToRegression, 'true') }}:
+  - deployment: PromoteToGlobal
+    displayName: Promote to PromoteToRegression
+    Pool:
+      vmImage: 'windows-2019'
+    environment: Regression
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - template: plan-release-template.yml
+            parameters: 
+              ServiceConnection: $(ServiceConnection)
+              BlueprintName: $(BlueprintName)
+              ProjectName: $(ProjectName)
+              SlotName: $(SlotName)
+              AlertsEnabled: true
+              Use32BitProcess: true
+              ServiceTypeName: $(ServiceTypeName)
+              Environment: 'regression'
+              SubscriptionId: $(SubscriptionId)
+              DeploymentLocation: $(DeploymentLocation)
+
+- ${{ if eq(parameters.promoteToHotFix, 'true') }}:
+  - deployment: PromoteToHotFix
+    displayName: Promote to HotFix
+    Pool:
+      vmImage: 'windows-2019'
+    environment: Regression
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - template: plan-release-template.yml
+            parameters: 
+              ServiceConnection: $(ServiceConnection)
+              BlueprintName: $(BlueprintName)
+              ProjectName: $(ProjectName)
+              SlotName: $(SlotName)
+              AlertsEnabled: true
+              Use32BitProcess: true
+              ServiceTypeName: $(ServiceTypeName)
+              Environment: 'hotfix'
+              SubscriptionId: $(SubscriptionId)
+              DeploymentLocation: $(DeploymentLocation)
+
+- ${{ if eq(parameters.promoteToTraining, 'true') }}:
+  - deployment: PromoteToTraining
+    displayName: Promote to Training
+    Pool:
+      vmImage: 'windows-2019'
+    environment: Regression
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - template: app-environment-template.yml
+            parameters: 
+              ServiceConnection: $(ServiceConnection)
+              BlueprintName: $(BlueprintName)
+              ProjectName: $(ProjectName)
+              SlotName: $(SlotName)
+              AlertsEnabled: true
+              Use32BitProcess: true
+              ServiceTypeName: $(ServiceTypeName)
+              Environment: 'training'
+              SubscriptionId: $(SubscriptionId)
+              DeploymentLocation: $(DeploymentLocation)

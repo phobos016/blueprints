@@ -1,0 +1,78 @@
+name: PBCoreService Blueprint Release
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - yaml/release/PBCoreAppServicePlan/*
+
+variables:
+  Patch: $[counter(format('{0}.{1}', variables['Major'], variables['Minor']), 0)]
+
+stages:
+- stage: Dev
+  jobs:
+  - deployment: ReleaseToDev
+    displayName: Release to Dev
+    pool:
+      vmImage: 'windows-2019'
+    environment: Dev
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - template: plan-release-template.yml
+            parameters: 
+              ServiceConnection: $(ServiceConnection)
+              BlueprintName: $(BlueprintName)
+              ServiceTypeName: $(ServiceName)
+              Environment: 'dev'
+              SubscriptionId: $(SubscriptionId)
+              DeploymentLocation: $(DeploymentLocation)
+              CreateApplicationInsightsFlag: $(CreateApplicationInsightsFlag)
+              SkuName: $(SkuName)
+              SkuTier: $(SkuTier)
+              SkuCount: $(SkuCount)
+              LockResource: false
+              ShouldApplyAutoScaleRule: $(ApplyAutoScaleRule)
+              AutoScaleMinimumNumberOfInstances: $(AutoScaleMinInstaces)
+              AutoScaleMaximumNumberOfInstances: $(AutoScaleMaxInstaces)
+              ScaleUpthreshold: $(ScaleUpThreshold)
+              ScaleDownThreshold: $(ScaleDownThreshold)
+              AspWebHookUrl: $(AspWebHookUrl)
+  - deployment: ReleaseToQA
+    displayName: Release to QA
+    pool:
+      vmImage: 'windows-2019'
+    environment: QA
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - template: plan-release-template.yml
+            parameters: 
+              ServiceConnection: $(ServiceConnection)
+              BlueprintName: $(BlueprintName)
+              ServiceTypeName: $(ServiceName)
+              Environment: 'qa'
+              SubscriptionId: $(SubscriptionId)
+              DeploymentLocation: $(DeploymentLocation)
+              CreateApplicationInsightsFlag: $(CreateApplicationInsightsFlag)
+              SkuName: $(SkuName)
+              SkuTier: $(SkuTier)
+              SkuCount: $(SkuCount)
+              LockResource: false
+              ShouldApplyAutoScaleRule: $(ApplyAutoScaleRule)
+              AutoScaleMinimumNumberOfInstances: $(AutoScaleMinInstaces)
+              AutoScaleMaximumNumberOfInstances: $(AutoScaleMaxInstaces)
+              ScaleUpthreshold: $(ScaleUpThreshold)
+              ScaleDownThreshold: $(ScaleDownThreshold)
+              AspWebHookUrl: $(AspWebHookUrl)
+
+
+
+

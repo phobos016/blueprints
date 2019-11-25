@@ -1,0 +1,38 @@
+name: PBCoreApiManagement Blueprint Release
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - yaml/release/PBCoreApiManagement/*
+
+variables:
+  Patch: $[counter(format('{0}.{1}', variables['Major'], variables['Minor']), 0)]
+
+stages:
+- stage: Dev
+  jobs:
+  - deployment: ReleaseToGlobal
+    displayName: Release to Global
+    pool:
+      vmImage: 'windows-2019'
+    environment: Dev
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - template: apim-release-template.yml
+            parameters: 
+              ServiceConnection: $(ServiceConnection)
+              DeploymentLocation: 'uksouth'
+              BlueprintName: $(BlueprintName)
+              ServiceName: $(ServiceName)
+              Environment: 'global'
+              PublisherEmail: $(PublisherEmail)
+              PublisherName: $(PublisherName)
+              SkuName: $(SkuName)
+              SkuCount: $(SkuCount)
+              SubscriptionId: $(SubscriptionId)

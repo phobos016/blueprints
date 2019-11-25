@@ -1,0 +1,25 @@
+name: Api Management Service Blueprint Build
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - PBCoreApiManagement/*
+
+stages:
+- stage: Release
+  jobs:
+  - job: ReleasePublish
+    displayName: Release and Publish Blueprint
+    pool:
+      vmImage: 'windows-2019'
+    steps:
+      - task: CreateBlueprint@1
+        inputs:
+          azureSubscription: $(ServiceConnection)
+          BlueprintName: PBCoreApiManagement
+          BlueprintPath: PBCoreApiManagement
+          AlternateLocation: false
+          PublishBlueprint: true

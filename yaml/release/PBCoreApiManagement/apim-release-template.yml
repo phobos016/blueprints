@@ -1,0 +1,40 @@
+parameters:
+  ServiceConnection: ''
+  DeploymentLocation: ''
+  BlueprintName: ''
+  ServiceName: ''
+  Environment: ''
+  PublisherEmail: ''
+  PublisherName: ''
+  SkuName: ''
+  SkuCount: ''
+  SubscriptionId: ''
+
+steps:
+- task: MagicChunks@2
+  inputs:
+    sourcePath: 'assign.json'
+    sourcePathRecurse: true
+    fileType: 'Json'
+    targetPathType: 'source'
+    transformationType: 'json'
+    transformations: |
+      {
+        "location": "${{ parameters.DeploymentLocation }}",
+        "properties/resourceGroups/ApimRG/name": "${{ parameters.ServiceName }}-${{ parameters.Environment }}",
+        "properties/resourceGroups/ApimRG/location": "${{ parameters.DeploymentLocation }}",
+        "properties/parameters/ProjectName/value": "${{ parameters.ServiceName }}",
+        "properties/parameters/environmentName/value": "${{ parameters.Environment }}",
+        "properties/parameters/publisherEmail/value": "${{ parameters.PublisherEmail }}",
+        "properties/parameters/publisherName/value": "${{ parameters.PublisherName }}",
+        "properties/parameters/sku/value": "${{ parameters.SkuName }}",
+        "properties/parameters/skuCount/value": "${{ parameters.SkuCount }}"
+      }
+- template: ../shared/assign-blueprint.yml
+  parameters: 
+    ServiceConnection: ${{ parameters.ServiceConnection }}
+    BlueprintName: ${{ parameters.BlueprintName }}
+    ServiceName: ${{ parameters.ServiceName }}
+    ParametersFile: yaml/release/PBCoreApiManagement/assign.json
+    Environment: ${{ parameters.Environment }}
+    SubscriptionId: ${{ parameters.SubscriptionId }}

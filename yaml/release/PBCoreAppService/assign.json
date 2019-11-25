@@ -1,0 +1,70 @@
+{
+  "identity": {
+    "type": "SystemAssigned"
+  },
+  "location": "",
+  "properties": {
+    "resourceGroups": {
+      "AppServiceRG": {
+        "location": "",
+        "name": ""
+      }
+    },
+    "blueprintId": "",
+    "parameters": {
+      "projectName": {
+        "value": ""
+      },
+      "environmentName": {
+        "value": ""
+      },
+      "serviceTypeName": {
+        "value": ""
+      },
+      "slotName": {
+        "value": ""
+      },
+      "alertsEnabled": {
+        "value": ""
+      },
+      "clientAffinityEnabled": {
+        "value": ""
+      },
+      "tags": {
+        "value": ""
+      },
+      "enableHttpsOnly": {
+        "value": ""
+      },
+      "lockResource": {
+        "value": ""
+      },
+      "use32bitWorkerProcess": {
+        "value": ""
+      },
+      "alertRequestsRuleCriteriaThreshold": {
+        "value": ""
+      },
+      "alertAppConnectionsRuleCriteriaThreshold": {
+        "value": ""
+      },
+      "alertAverageResponseTimeRuleCriteriaThreshold": {
+        "value": ""
+      },
+      "alertMemoryWorkingSetRuleCriteriaThreshold": {
+        "value": ""
+      },
+      "actionGroupReceiverEmailAddress": {
+        "value": ""
+      },
+      "additionalCommonAppSettings": {
+        "value": {
+          "Features:Flags:0:Name": "Caching",
+          "Features:Flags:0:IsActive": "",
+          "Features:Flags:1:Name": "Validation",
+          "Features:Flags:1:IsActive": ""
+        }
+      }
+    }
+  }
+}

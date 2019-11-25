@@ -1,0 +1,25 @@
+name: App Service Plan Blueprint Build
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - PBCoreAppServicePlan/*
+
+stages:
+- stage: Release
+  jobs:
+  - job: ReleasePublish
+    displayName: Release and Publish Blueprint
+    pool:
+      vmImage: 'windows-2019'
+    steps:
+      - task: CreateBlueprint@1
+        inputs:
+          azureSubscription: $(ServiceConnection)
+          BlueprintName: PBCoreAppServicePlan
+          BlueprintPath: PBCoreAppServicePlan
+          AlternateLocation: false
+          PublishBlueprint: true
