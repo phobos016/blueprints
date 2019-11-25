@@ -4,6 +4,7 @@
     },
     "location": "uksouth",
     "properties": {
+        "resourceGroups": { },
         "blueprintId": "",
         "locks": {
             "mode": "none"

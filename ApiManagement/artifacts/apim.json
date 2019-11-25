@@ -1,9 +1,10 @@
-{   
-    "kind":"template",
-    "properties":{
+{
+    "kind": "template",
+    "properties": {
         "template": {
             "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
             "contentVersion": "1.0.0.0",
+
             "parameters": {
                 "projectName": {
                     "type": "string"
@@ -21,38 +22,36 @@
                     "type": "string"
                 },
                 "skuCount": {
-                    "type": "int"
+                    "type": "string"
                 }
             },
             "variables": {
                 "projectNameEnvironment": "[concat(parameters('projectName'),'-',parameters('environmentName'))]",
                 "apiManagementName": "[concat(variables('projectNameEnvironment'), '-apim')]"
             },
-            "resources": [
-                {
-                    "apiVersion": "2019-01-01",
-                    "name": "[variables('apiManagementName')]",
-                    "type": "Microsoft.ApiManagement/service",
-                    "tags": {
-                        "Project": "[parameters('projectName')]",
-                        "Environment": "[parameters('environmentName')]",
-                        "TestTag": "woohhoooo!!"
-                    },
-                    "sku": {
-                        "name": "[parameters('sku')]",
-                        "capacity": "[parameters('skuCount')]"
-                    },
-                    "location": "[resourceGroup().location]",
-                    "properties": {
-                        "publisherEmail": "[parameters('publisherEmail')]",
-                        "publisherName": "[parameters('publisherName')]",
-                        "notificationSenderEmail": "noreply@mail.windowsazure.com"
-                    }
+            "resources": [{
+                "apiVersion": "2019-01-01",
+                "name": "[variables('apiManagementName')]",
+                "type": "Microsoft.ApiManagement/service",
+                "tags": {
+                    "Project": "[parameters('projectName')]",
+                    "Environment": "[parameters('environmentName')]",
+                    "TestTag": "woohhoooo!!"
+                },
+                "sku": {
+                    "name": "[parameters('sku')]",
+                    "capacity": "[parameters('skuCount')]"
+                },
+                "location": "[resourceGroup().location]",
+                "properties": {
+                    "publisherEmail": "[parameters('publisherEmail')]",
+                    "publisherName": "[parameters('publisherName')]",
+                    "notificationSenderEmail": "noreply@mail.windowsazure.com"
                 }
-            ]
+            }]
         },
         "resourceGroup": "ApimRG",
-        "parameters":{
+        "parameters": {
             "projectName": {
                 "value": "[parameters('projectName')]"
             },

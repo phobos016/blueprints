@@ -19,11 +19,11 @@
                 "type": "string",
                 "defaultValue": "true",
                 "allowedValues": [
-                  "true",
-                  "false"
+                    "true",
+                    "false"
                 ],
                 "metadata": {
-                  "description": "A boolean to indicate whether the an instance of application insights is created with this service plan"
+                    "description": "A boolean to indicate whether the an instance of application insights is created with this service plan"
                 }
             },
             "skuName": {
@@ -43,7 +43,7 @@
                     "P3",
                     "P4",
                     "I1"
-                  ],
+                ],
                 "metadata": {
                     "description": "The instance size of the app."
                 }
@@ -59,14 +59,66 @@
                 "metadata": {
                     "description": "The pricing tier for the App Service plan."
                 }
+            },
+            "skuCount": {
+                "type": "string",
+                "metadata": {
+                    "description": "Instance Size"
+                }
+            },
+            "lockResource": {
+                "type": "string",
+                "defaultValue": false,
+                "metadata": {
+                    "description": "When true, the resource will have a delete lock created upon it"
+                }
+            },
+            "shouldApplyAutoScaleRule": {
+                "type": "string",
+                "metadata": {
+                    "description": "Enable AutoScale rule"
+                }
+            },
+            "autoScaleMinimumNumberOfInstances": {
+                "type": "string",
+                "defaultValue": 1,
+                "metadata": {
+                    "description": "minimum instance count"
+                }
+            },
+            "autoScaleMaximumNumberOfInstances": {
+                "type": "string",
+                "defaultValue": 1,
+                "metadata": {
+                    "description": "maximum instance count"
+                }
+            },
+            "scaleUpthreshold": {
+                "type": "string",
+                "defaultValue": "50",
+                "metadata": {
+                    "description": "Thresold before scale event"
+                }
+            },
+            "scaleDownThreshold": {
+                "type": "string",
+                "defaultValue": "30",
+                "metadata": {
+                    "description": "Thresold before scale event"
+                }
+            },
+            "aspWebHookUrl": {
+                "type": "string",
+                "metadata": {
+                    "description": "Web hook for Autoscaling Alerts"
+                }
             }
         },
         "resourceGroups": {
             "AppServicePlanRG": {
                 "description": "App Service Plan Resource Group",
-                "name":"[concat(parameters('serviceTypeName'), '-service-plans')]"
             }
         }
     },
-    "type": "Microsoft.Blueprint/blueprints" 
+    "type": "Microsoft.Blueprint/blueprints"
 }

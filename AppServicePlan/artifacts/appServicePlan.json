@@ -1,97 +1,226 @@
-{   
-    "kind":"template",
-    "properties":{
-        "template": {
-            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-            "contentVersion": "1.0.0.0",
-            "parameters": {
-                "serviceTypeName": {
-                    "type": "string"
-                },
-                "environmentName": {
-                    "type": "string"
-                },
-                "createApplicationInsightsFlag": {
-                    "type": "string"
-                },
-                "skuName": {
-                    "type": "string"
-                },
-                "skuTier": {
-                    "type": "string"
-                }
-            },
-            "variables": {
-                "serviceTypeNameEnvironment": "[concat(parameters('serviceTypeName'),'-', parameters('environmentName'))]",
-                "appServicePlanName": "[concat(variables('serviceTypeNameEnvironment'),'-service-plan')]",
-                "appServicePlanResourceId": "[resourceId('Microsoft.Web/serverFarms/', variables('appServicePlanName'))]",
-                "applicationInsightsName": "[concat(variables('serviceTypeNameEnvironment'),'-application-insights')]",
-                "applicationInsightsResourceId": "[resourceId('Microsoft.Insights/components/', variables('applicationInsightsName'))]"
-            },
-            "resources": [
-                {
-                    "condition":"[equals(parameters('createApplicationInsightsFlag'), 'true')]",
-                    "type": "Microsoft.Insights/components",
-                    "name": "[variables('applicationInsightsName')]",
-                    "apiVersion": "2015-05-01",
-                    "location": "[resourceGroup().location]",
-                    "kind": "web",
-                    "tags": {
-                        "displayName": "Application Insights",
-                        "Environment": "[parameters('environmentName')]",
-                        "[concat('hidden-link:', variables('appServicePlanResourceId'))]": "Resource",
-                        "TestTag":"wewwewe"
-                    },
-                    "dependsOn": [
-                      "[variables('appServicePlanResourceId')]"
-                    ],
-                    "properties": {
-                      "applicationId": "[variables('applicationInsightsName')]",
-                      "Application_Type": "web"
-                    }
-                },
-                {
-                    "type": "Microsoft.Web/serverfarms",
-                    "apiVersion": "2018-02-01",
-                    "name": "[variables('appServicePlanName')]",
-                    "location": "[resourceGroup().location]",
-                    "tags": {
-                        "Project": "[parameters('serviceTypeName')]",
-                        "Environment": "[parameters('environmentName')]"
-                    },
-                    "sku": {
-                        "name": "[parameters('skuName')]",
-                        "tier": "[parameters('skuTier')]"
-                    },
-                    "kind": "app",
-                    "properties": {
-                        "name": "[variables('appServicePlanName')]",
-                        "workerSize": "0",
-                        "workerSizeId": "0",
-                        "numberOfWorkers": "1",
-                        "reserved": false
-                    }
-                }
-            ]
+{
+  "kind": "template",
+  "properties": {
+    "template": {
+      "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "serviceTypeName": {
+          "type": "string"
         },
-        "resourceGroup": "AppServicePlanRG",
-        "parameters":{
-            "serviceTypeName": {
-                "value": "[parameters('serviceTypeName')]"
-            },
-            "environmentName": {
-                "value": "[parameters('environmentName')]"
-            },
-            "createApplicationInsightsFlag": {
-                "value": "[parameters('createApplicationInsightsFlag')]"
-            },
-            "skuName": {
-                "value": "[parameters('skuName')]"
-            },
-            "skuTier": {
-                "value": "[parameters('skuTier')]"
-            }
+        "environmentName": {
+          "type": "string"
+        },
+        "createApplicationInsightsFlag": {
+          "type": "string"
+        },
+        "skuName": {
+          "type": "string"
+        },
+        "skuTier": {
+          "type": "string"
+        },
+        "skuCount": {
+          "type": "string"
+        },
+        "lockResource": {
+          "type": "string"
+        },
+        "shouldApplyAutoScaleRule": {
+          "type": "string"
+        },
+        "autoScaleMinimumNumberOfInstances": {
+          "type": "string"
+        },
+        "autoScaleMaximumNumberOfInstances": {
+          "type": "string"
+        },
+        "scaleUpThreshold": {
+          "type": "string"
+        },
+        "scaleDownThreshold": {
+          "type": "string"
+        },
+        "aspWebHookUrl": {
+          "type": "string"
         }
+      },
+      "variables": {
+        "serviceTypeNameEnvironment": "[concat(parameters('serviceTypeName'),'-', parameters('environmentName'))]",
+        "appServicePlanName": "[concat(variables('serviceTypeNameEnvironment'),'-service-plan')]",
+        "appServicePlanResourceId": "[resourceId('Microsoft.Web/serverFarms/', variables('appServicePlanName'))]",
+        "applicationInsightsName": "[concat(variables('serviceTypeNameEnvironment'),'-application-insights')]",
+        "applicationInsightsResourceId": "[resourceId('Microsoft.Insights/components/', variables('applicationInsightsName'))]",
+        "planNameForAlert": "[if(greaterOrEquals(length(variables('appServicePlanName')), 25), skip(variables('appServicePlanName'), sub(25, length(variables('appServicePlanName')))), variables('appServicePlanName'))]"
+      },
+      "resources": [{
+          "condition": "[equals(parameters('createApplicationInsightsFlag'), 'true')]",
+          "type": "Microsoft.Insights/components",
+          "name": "[variables('applicationInsightsName')]",
+          "apiVersion": "2015-05-01",
+          "location": "[resourceGroup().location]",
+          "kind": "web",
+          "tags": {
+            "displayName": "Application Insights",
+            "Environment": "[parameters('environmentName')]",
+            "[concat('hidden-link:', variables('appServicePlanResourceId'))]": "Resource"
+          },
+          "dependsOn": [
+            "[variables('appServicePlanResourceId')]"
+          ],
+          "properties": {
+            "applicationId": "[variables('applicationInsightsName')]",
+            "Application_Type": "web"
+          }
+        },
+        {
+          "type": "Microsoft.Web/serverfarms",
+          "apiVersion": "2018-02-01",
+          "name": "[variables('appServicePlanName')]",
+          "location": "[resourceGroup().location]",
+          "tags": {
+            "env": "[parameters('serviceTypeName')]",
+            "location": "[resourceGroup().location]"
+          },
+          "sku": {
+            "name": "[parameters('skuName')]",
+            "tier": "[parameters('skuTier')]",
+            "capacity": "[parameters('skuCount')]"
+          },
+          "kind": "app",
+          "properties": {
+            "name": "[variables('appServicePlanName')]",
+            "workerSize": "0",
+            "workerSizeId": "0",
+            "numberOfWorkers": "[parameters('skuCount')]",
+            "reserved": false
+          }
+        },
+        {
+          "condition": "[equals(parameters('shouldApplyAutoScaleRule'), 'true')]",
+          "type": "Microsoft.Insights/autoscalesettings",
+          "name": "[concat(variables('appServicePlanName'), '-setting')]",
+          "apiVersion": "2015-04-01",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[variables('appServicePlanResourceId')]"
+          ],
+          "properties": {
+            "profiles": [{
+              "name": "DefaultAutoscaleProfile",
+              "capacity": {
+                "minimum": "[parameters('autoScaleMinimumNumberOfInstances')]",
+                "maximum": "[parameters('autoScaleMaximumNumberOfInstances')]",
+                "default": "[parameters('skuCount')]"
+              },
+              "rules": [{
+                  "metricTrigger": {
+                    "metricName": "CpuPercentage",
+                    "metricNamespace": "",
+                    "MetricResourceUri": "[variables('appServicePlanResourceId')]",
+                    "timeGrain": "PT5M",
+                    "statistic": "Average",
+                    "timeWindow": "PT10M",
+                    "timeAggregation": "Average",
+                    "operator": "GreaterThan",
+                    "threshold": "[parameters('scaleUpThreshold')]"
+                  },
+                  "scaleAction": {
+                    "direction": "Increase",
+                    "type": "ChangeCount",
+                    "value": "1",
+                    "cooldown": "PT5M"
+                  }
+                },
+                {
+                  "metricTrigger": {
+                    "metricName": "CpuPercentage",
+                    "metricNamespace": "",
+                    "MetricResourceUri": "[variables('appServicePlanResourceId')]",
+                    "timeGrain": "PT5M",
+                    "statistic": "Average",
+                    "timeWindow": "PT10M",
+                    "timeAggregation": "Average",
+                    "operator": "LessThan",
+                    "threshold": "[parameters('scaleDownThreshold')]"
+                  },
+                  "scaleAction": {
+                    "direction": "Decrease",
+                    "type": "ChangeCount",
+                    "value": "1",
+                    "cooldown": "PT5M"
+                  }
+                }
+              ]
+            }],
+            "enabled": true,
+            "targetResourceUri": "[variables('appServicePlanResourceId')]",
+            "notifications": [{
+              "operation": "Scale",
+              "webhooks": [{
+                "serviceUri": "[parameters('aspWebHookUrl')]",
+                "properties": {}
+              }]
+            }]
+          }
+        },
+        {
+          "apiVersion": "2017-04-01",
+          "condition": "[equals(parameters('lockResource'), 'true')]",
+          "type": "Microsoft.Web/serverfarms/providers/locks",
+          "name": "[concat(variables('appServicePlanName'), '/Microsoft.Authorization/PreventDeletionLock')]",
+          "properties": {
+            "level": "CanNotDelete",
+            "notes": "Admin lock to prevent accidental deletion"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Web/serverfarms/', variables('appServicePlanName'))]"
+          ]
+        }
+      ]
     },
-    "type": "Microsoft.Blueprint/blueprints/artifacts"
+    "resourceGroup": "AppServicePlanRG",
+    "parameters": {
+      "serviceTypeName": {
+        "value": "[parameters('serviceTypeName')]"
+      },
+      "environmentName": {
+        "value": "[parameters('environmentName')]"
+      },
+      "createApplicationInsightsFlag": {
+        "value": "[parameters('createApplicationInsightsFlag')]"
+      },
+      "skuName": {
+        "value": "[parameters('skuName')]"
+      },
+      "skuTier": {
+        "value": "[parameters('skuTier')]"
+      },
+      "skuCount": {
+        "value": "[parameters('skuCount')]"
+      },
+      "lockResource": {
+        "value": "[parameters('lockResource')]"
+      },
+      "shouldApplyAutoScaleRule": {
+        "value": "[parameters('shouldApplyAutoScaleRule')]"
+      },
+      "autoScaleMinimumNumberOfInstances": {
+        "value": "[parameters('autoScaleMinimumNumberOfInstances')]"
+      },
+      "autoScaleMaximumNumberOfInstances": {
+        "value": "[parameters('autoScaleMaximumNumberOfInstances')]"
+      },
+      "scaleUpThreshold": {
+        "value": "[parameters('scaleUpThreshold')]"
+      },
+      "scaleDownThreshold": {
+        "value": "[parameters('scaleDownThreshold')]"
+      },
+      "aspWebHookUrl": {
+        "value": "[parameters('aspWebHookUrl')]"
+      }
+    }
+  },
+  "type": "Microsoft.Blueprint/blueprints/artifacts"
 }

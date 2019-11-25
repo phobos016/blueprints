@@ -2,7 +2,7 @@
     "properties": {
         "description": "Apim Management Test Blueprint",
         "targetScope": "subscription",
-        "parameters": { 
+        "parameters": {
             "projectName": {
                 "type": "string",
                 "minLength": 1,
@@ -13,7 +13,8 @@
                 "allowedValues": [
                     "dev",
                     "qa",
-                    "prod"
+                    "prod",
+                    "global"
                 ],
                 "defaultValue": "dev"
             },
@@ -23,7 +24,7 @@
                 "metadata": {
                     "description": "The email address of the owner of the service"
                 },
-                "defaultValue":"paul@phobos-software.net"
+                "defaultValue": "paul@phobos-software.net"
             },
             "publisherName": {
                 "type": "string",
@@ -31,7 +32,7 @@
                 "metadata": {
                     "description": "The name of the owner of the service"
                 },
-                "defaultValue":"Paul Sheridan"
+                "defaultValue": "Paul Sheridan"
             },
             "sku": {
                 "type": "string",
@@ -43,8 +44,8 @@
                 "defaultValue": "Developer"
             },
             "skuCount": {
-                "type": "int",
-                "defaultValue": 1,
+                "type": "string",
+                "defaultValue": "1",
                 "metadata": {
                     "description": "The instance size of this API Management service."
                 }
@@ -56,5 +57,5 @@
             }
         }
     },
-    "type": "Microsoft.Blueprint/blueprints" 
+    "type": "Microsoft.Blueprint/blueprints"
 }

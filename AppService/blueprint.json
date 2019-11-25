@@ -15,6 +15,9 @@
                 ],
                 "defaultValue": "dev"
             },
+            "serviceTypeName": {
+                "type": "string"
+            },
             "slotName": {
                 "type": "string",
                 "allowedValues": [
@@ -22,14 +25,51 @@
                 ],
                 "defaultValue": "staging"
             },
-            "serviceTypeName": {
-                "type": "string"
+            "alertsEnabled": {
+                "type": "string",
+                "defaultValue": "true",
+                "allowedValues": [
+                    "true",
+                    "false"
+                ],
+                "metadata": {
+                    "description": "A boolean to indicate whether to enable alerts."
+                }
+            },
+            "clientAffinityEnabled": {
+                "type": "string",
+                "defaultValue": "false",
+                "metadata": {
+                    "description": "Disable the ARR Affinity for this site"
+                }
+            },
+            "enableHttpsOnly": {
+                "type": "string",
+                "metadata": {
+                    "description": "Enable HTTPS only access to the site"
+                },
+                "defaultValue": "false"
+            },
+            "lockResource": {
+                "type": "string",
+                "defaultValue": "false",
+                "metadata": {
+                    "description": "When true, the resource will have a delete lock created upon it"
+                }
+            },
+            "use32bitWorkerProcess": {
+                "type": "string",
+                "defaultValue": "false",
+                "allowedValues": [
+                    "true",
+                    "false"
+                ]
             },
             "alertRequestsRuleCriteriaThreshold": {
                 "type": "string",
                 "defaultValue": "60",
                 "metadata": {
-                  "description": "An integer to indicate the number of requests required to trigger the alert."
+                    "description": "An integer to indicate the number of requests required to trigger the alert."
                 }
             },
             "alertAppConnectionsRuleCriteriaThreshold": {
@@ -53,13 +93,6 @@
                     "description": "An integer to indicate the number of bytes required to trigger the alert."
                 }
             },
-            "alertHttpServerErrorsRuleCriteriaThreshold": {
-                "type": "string",
-                "defaultValue": "0",
-                "metadata": {
-                    "description": "An integer to indicate the number of http server errors required to trigger the alert."
-                }
-            },
             "actionGroupReceiverEmailAddress": {
                 "type": "string",
                 "defaultValue": "azuremonitor@purplebricks.pagerduty.com",
@@ -67,7 +100,7 @@
                     "description": "An email address that receives alert emails."
                 }
             },
-            "additionalCommonAppSettings":{
+            "additionalCommonAppSettings": {
                 "type": "object",
                 "metadata": {
                     "description": "hashtable of extended application settings to combine into the app service"
@@ -80,5 +113,5 @@
             }
         }
     },
-    "type": "Microsoft.Blueprint/blueprints" 
+    "type": "Microsoft.Blueprint/blueprints"
 }
